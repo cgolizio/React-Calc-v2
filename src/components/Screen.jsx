@@ -11,8 +11,7 @@ const Screen = ({ value }) => {
       justifyContent="flex-end"
       p={2}
       borderRadius="25px"
-      bg="#848984"
-      // bg="dark"
+      bg="#000000"
       color="#F4D245"
       // color="#aeaeae"
       // border="1px solid ghostwhite"

@@ -31,4 +31,7 @@ export const customTheme = extendTheme({
   components: {
     Button,
   },
+  fonts: {
+    body: 'Titillium Web',
+  },
 });
