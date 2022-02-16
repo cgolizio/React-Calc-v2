@@ -1,7 +1,6 @@
 export const ButtonStyles = {
   baseStyle: {
     borderRadius: '25px',
-    // minH: '10rem',
     minH: '100%',
     w: '100%',
   },

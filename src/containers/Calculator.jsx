@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, GridItem } from '@chakra-ui/react';
 import Screen from '../components/Screen';
 import ButtonBox from './ButtonBox';
@@ -19,16 +19,7 @@ const Calculator = () => {
     num: 0,
     result: 0,
   });
-  const [ prevCalc, setPrevCalc ] = useState({
-    o: "",
-    n: 0,
-    r: 0,
-  });
   const [ prevEquation, setPrevEquation ] = useState("");
-
-  useEffect(() => {
-    console.log('PREV_EQUATION (INSIDE useEffect)', prevEquation)
-  }, [prevEquation])
 
   const chooseVariant = (btn) => {
     let variant;
@@ -51,13 +42,6 @@ const resetHandler = () => {
     operator: "",
     num: 0,
     result: 0,
-  });
-
-  setPrevCalc({
-    ...prevCalc,
-    o: "",
-    n: 0,
-    r: 0,
   });
 
   setPrevEquation("");
@@ -87,11 +71,8 @@ const deleteHandler = () => {
 // = //
 const equalsHandler = () => {
   if (calc.operator && calc.num) {
-    setPrevCalc({
-      o: calc.operator,
-      n: calc.num,
-      r: calc.result
-    });
+
+    setPrevEquation(`${calc.result} ${calc.operator} ${calc.num}`);
 
     setCalc({
       ...calc,
@@ -152,19 +133,14 @@ const numHandler = e => {
   }
 };
 
-useEffect(() => {
-  prevCalc.o.length && setPrevEquation(`${prevCalc.r} ${prevCalc.o} ${prevCalc.n}`);
-}, [prevCalc]);
-
   return (
-    <Box maxH="95vh" w="95vw">
+    <Box maxH="95vh" w="95vw" paddingTop={7}>
       <Screen value={calc.num ? calc.num : calc.result} prevVal={prevEquation} />
       <ButtonBox>
         {
           buttonVals.flat().map((btn, index) => (
             <GridItem key={index} colSpan={btn === 0 ? 2 : 1} value={btn}>
               <CalcButton
-                // key={index}
                 variant={chooseVariant(btn)}
                 value={btn}
                 onClick={
