@@ -3,6 +3,7 @@ import { Box, GridItem } from '@chakra-ui/react';
 import Screen from '../components/Screen';
 import ButtonBox from './ButtonBox';
 import CalcButton from '../components/CalcButton';
+import { toLocaleString, removeSpaces, doMath } from '../helpers';
 
 const buttonVals = [
   ["AC", "+/–", "‹‹‹", "÷"],
@@ -12,21 +13,22 @@ const buttonVals = [
   [0, ".", "="],
 ];
 
-const toLocaleString = (num) =>
-  String(num).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, "$1 ");
-
-const removeSpaces = (num) => num.toString().replace(/\s/g, "");
-
 const Calculator = () => {
   const [ calc, setCalc ] = useState({
-    sign: "",
+    operator: "",
     num: 0,
     result: 0,
   });
+  const [ prevCalc, setPrevCalc ] = useState({
+    o: "",
+    n: 0,
+    r: 0,
+  });
+  const [ prevEquation, setPrevEquation ] = useState("");
 
   useEffect(() => {
-    console.log('CALC (INSIDE useEffect)', calc)
-  }, [calc])
+    console.log('PREV_EQUATION (INSIDE useEffect)', prevEquation)
+  }, [prevEquation])
 
   const chooseVariant = (btn) => {
     let variant;
@@ -42,70 +44,86 @@ const Calculator = () => {
     return variant;
   };
 
+// AC //
 const resetHandler = () => {
   setCalc({
     ...calc,
-    sign: "",
+    operator: "",
     num: 0,
     result: 0,
   });
+
+  setPrevCalc({
+    ...prevCalc,
+    o: "",
+    n: 0,
+    r: 0,
+  });
+
+  setPrevEquation("");
 };
 
+// +/– //
 const invertHandler = () => {
   setCalc({
     ...calc,
     num: calc.num ? toLocaleString(removeSpaces(calc.num)) * -1 : 0,
     result: calc.result ? toLocaleString(removeSpaces(calc.result)) * -1 : 0,
-    sign: "",
+    operator: "",
   });
 };
 
-const deleteHandler = e => {
-  e.preventDefault();
-  const value = e.target.textContent;
+// ‹‹‹ //
+const deleteHandler = () => {
+  if (removeSpaces(calc.num).length > 1) {
+    const newNum = removeSpaces(calc.num).split('').slice(0, -1).join('');
+    setCalc({
+      ...calc,
+      num: newNum
+    })
+  }
 };
 
+// = //
 const equalsHandler = () => {
-  if (calc.sign && calc.num) {
-    const doMath = (a, b, sign) => (
-      sign === "+"
-        ? a + b
-        : sign === "–"
-        ? a - b
-        : sign === "X"
-        ? a * b
-        : a / b
-    );
+  if (calc.operator && calc.num) {
+    setPrevCalc({
+      o: calc.operator,
+      n: calc.num,
+      r: calc.result
+    });
 
     setCalc({
       ...calc,
       result:
-        calc.num === "0" && calc.sign === "/"
+        calc.num === "0" && calc.operator === "/"
           ? "Err: can't divide by 0"
           : toLocaleString(
               doMath(
                 Number(removeSpaces(calc.result)),
                 Number(removeSpaces(calc.num)),
-                calc.sign
+                calc.operator
               )
             ),
-      sign: "",
+      operator: "",
       num: 0,
-    })
+    });
   }
 };
 
-const signHandler = e => {
+// ÷ X – + //
+const operatorHandler = e => {
   e.preventDefault();
   const value = e.target.textContent;
   setCalc({
     ...calc,
-    sign: value,
+    operator: value,
     result: !calc.result && calc.num ? calc.num : calc.result,
     num: 0,
   });
 };
 
+// . //
 const decimalHandler = e => {
   e.preventDefault();
   const value = e.target.textContent;
@@ -115,6 +133,7 @@ const decimalHandler = e => {
   });
 };
 
+// 0-9 //
 const numHandler = e => {
   e.preventDefault();
   const value = e.target.textContent;
@@ -128,14 +147,18 @@ const numHandler = e => {
           : removeSpaces(calc.num) % 1 === 0
           ? toLocaleString(Number(removeSpaces(calc.num + value)))
           : toLocaleString(calc.num + value),
-      result: !calc.sign ? 0 : calc.result,
+      result: !calc.operator ? 0 : calc.result,
     });
   }
 };
 
+useEffect(() => {
+  prevCalc.o.length && setPrevEquation(`${prevCalc.r} ${prevCalc.o} ${prevCalc.n}`);
+}, [prevCalc]);
+
   return (
     <Box maxH="95vh" w="95vw">
-      <Screen value={calc.num ? calc.num : calc.result} />
+      <Screen value={calc.num ? calc.num : calc.result} prevVal={prevEquation} />
       <ButtonBox>
         {
           buttonVals.flat().map((btn, index) => (
@@ -154,7 +177,7 @@ const numHandler = e => {
                     : btn === '='
                     ? equalsHandler
                     : btn === '÷' || btn === 'X' || btn === '–' || btn === '+'
-                    ? signHandler
+                    ? operatorHandler
                     : btn === '.'
                     ? decimalHandler
                     : numHandler
