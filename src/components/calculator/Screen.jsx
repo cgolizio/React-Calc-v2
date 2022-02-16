@@ -8,19 +8,19 @@ const Screen = ({ value, prevVal }) => {
       w="100%"
       flexDir="column"
       textStyle="lg"
+      fontFamily="screen"
       alignItems="flex-end"
       justifyContent="flex-end"
       p={2}
-      paddingRight={5}
+      pr={5}
       borderRadius="25px"
       bg="#000000"
       color="#F4D245"
       // border="1px solid ghostwhite"
       >
       <Box
-        justifySelf="flex-start"
         textStyle="xs"
-        color="#aeaeae"
+        color="#fafafa"
       >
         {prevVal}
       </Box>

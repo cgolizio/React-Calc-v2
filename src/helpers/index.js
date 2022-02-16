@@ -1,7 +1,9 @@
 export const toLocaleString = num =>
-  String(num).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1 ');
+  String(num)
+    .replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1 ')
+    .replace(/\s/g, ',');
 
-export const removeSpaces = num => num.toString().replace(/\s/g, '');
+export const removeCommas = num => num.toString().replace(/\D/g, '');
 
 export const doMath = (a, b, operator) =>
   operator === '+'

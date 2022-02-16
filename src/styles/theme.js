@@ -32,6 +32,7 @@ export const customTheme = extendTheme({
     Button,
   },
   fonts: {
-    body: 'Titillium Web',
+    screen: 'JD LED5',
+    button: 'Fontype Rounded',
   },
 });
