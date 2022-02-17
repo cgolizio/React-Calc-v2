@@ -2,6 +2,10 @@ import { extendTheme } from '@chakra-ui/react';
 import { ButtonStyles as Button } from './components/buttonStyles';
 
 export const customTheme = extendTheme({
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false,
+  },
   colors: {
     primary: '#736BFB',
     secondary: '#008C98',
